@@ -39,8 +39,7 @@ PyTorch 1.9+
 
 ```bash
 # Clone repository
-git clone [https://github.com/nguyentuongbachhy/Evolving-Orchestration](https://github.com/nguyentuongbachhy/Evolving-Orchestration.git)
-cd multi-agent-rl
+git clone https://github.com/nguyentuongbachhy/Evolving-Orchestration.git
 
 # Install dependencies
 pip install -r requirements.txt
