@@ -171,7 +171,7 @@ Based on the research paper, you should expect:
 ## 📁 Project Structure
 
 ```
-multi_agent_rl/
+evolving-orchestration/
 ├── README.md
 ├── requirements.txt
 ├── main.py                     # Main pipeline orchestrator
@@ -285,7 +285,7 @@ self.agents["custom_agent"] = custom_agent
 ### Adding New Test Cases
 
 ```python
-# In test_cases.py
+# In testcases.py
 @staticmethod
 def get_custom_problems():
     return [
