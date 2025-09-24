@@ -1,2 +1,5 @@
 **/.env
 **/test
+**/outputs
+**/__pycache__
+*.pyc

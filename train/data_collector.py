@@ -40,6 +40,8 @@ class DataCollector:
                     update = chunk
                     
                 for node_name, node_update in update.items():
+                    if node_update is None:
+                        continue
                     if "messages" in node_update:
                         new_messages = convert_to_messages(node_update["messages"])
                         

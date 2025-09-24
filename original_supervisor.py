@@ -1,22 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[ ]:
-
-
-import os
-import getpass
-
-def _define_if_undefined(var: str):
-    if not os.environ.get(var):
-        os.environ[var] = getpass.getpass(f"Please provide your {var}")
-
-_define_if_undefined("OPENAI_API_KEY")
-_define_if_undefined("TAVILY_API_KEY")
-
-
-# In[ ]:
-
+from dotenv import load_dotenv
+load_dotenv()
 
 from langchain_tavily import TavilySearch
 from langgraph.prebuilt import create_react_agent
@@ -37,7 +22,7 @@ research_agent = create_react_agent(
 )
 
 
-# In[ ]:
+
 
 
 import math
@@ -64,10 +49,6 @@ math_agent = create_react_agent(
     ),
     name="math_agent"
 )
-
-
-# In[ ]:
-
 
 from typing import Annotated
 from langchain_core.tools import tool, InjectedToolCallId
@@ -100,10 +81,6 @@ def create_handoff_tool(*, agent_name: str, description: str | None = None):
 assign_to_research = create_handoff_tool(agent_name="research_agent", description="Assign task to a researcher agent.")
 assign_to_math = create_handoff_tool(agent_name="math_agent", description="Assign task to a math agent.")
 
-
-# In[ ]:
-
-
 supervisor_agent = create_react_agent(
     model="openai:gpt-4o-mini",
     tools=[assign_to_research, assign_to_math],
@@ -116,10 +93,6 @@ supervisor_agent = create_react_agent(
     ),
     name="supervisor"
 )
-
-
-# In[ ]:
-
 
 from langgraph.graph import END
 
@@ -134,17 +107,7 @@ supervisor = (
     .compile()
 )
 
-
-# In[ ]:
-
-
-from IPython.display import display, Image
-
-display(Image(supervisor.get_graph().draw_mermaid_png()))
-
-
-# In[ ]:
-
+# IPython display removed for script compatibility
 
 from langgraph.types import Send
 
@@ -167,10 +130,6 @@ def create_task_description_handoff_tool(*, agent_name: str, description: str | 
 
 assign_to_research_with_description = create_task_description_handoff_tool(agent_name="research_agent", description="Assign task to a researcher agent.")
 assign_to_math_with_description = create_task_description_handoff_tool(agent_name="math_agent", description="Assign task to a math agent.")
-
-
-# In[ ]:
-
 
 supervisor_agent_with_description = create_react_agent(
     model="openai:gpt-4o-mini",
@@ -196,17 +155,7 @@ supervisor_with_description = (
     .compile()
 )
 
-
-# In[ ]:
-
-
-from IPython.display import display, Image
-
-display(Image(supervisor_with_description.get_graph().draw_mermaid_png()))
-
-
-# In[ ]:
-
+# IPython display removed for script compatibility
 
 from langchain_core.messages import convert_to_messages
 
@@ -246,36 +195,4 @@ def pretty_print_messages(update, last_message=False):
             pretty_print_message(m, indent=is_subgraph)
         print("\n")
 
-
-# In[ ]:
-
-
-for chunk in supervisor_with_description.stream(
-    {
-        "messages": [
-            {
-                "role": "user",
-                "content": "find US and New York state GDP in 2024. what % of US GDP was New York state?",
-            }
-        ]
-    },
-    subgraphs=True,
-):
-    pretty_print_messages(chunk, last_message=True)
-
-
-# In[ ]:
-
-
-for chunk in supervisor_with_description.stream(
-    {
-        "messages": [
-            {
-                "role": "user",
-                "content": "What is 2**10 + 3 - 2**9?",
-            }
-        ]
-    },
-    subgraphs=True,
-):
-    pretty_print_messages(chunk, last_message=True)
+# Test code removed - should be run only when needed

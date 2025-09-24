@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import os
-import getpass
 import time
 from typing import Dict, Tuple
 from langchain_tavily import TavilySearch
@@ -12,13 +10,6 @@ from orchestration.rl_orchestrator import RLOrchestrator
 from orchestration.reward_system import RewardSystem
 from orchestration.training_manager import TrainingManager
 from utils.cost_tracker import CostTracker
-
-def _define_if_undefined(var: str):
-    if not os.environ.get(var):
-        os.environ[var] = getpass.getpass(f"Please provide your {var}")
-
-_define_if_undefined("OPENAI_API_KEY")
-_define_if_undefined("TAVILY_API_KEY")
 
 def calculate_math_expression(expression: str) -> float:
     allowed = {k: v for k, v in math.__dict__.items() if not k.startswith('__')}

@@ -4,6 +4,9 @@ import json
 import torch
 import argparse
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from train.data_collector import DataCollector
 from train.imitation_trainer import ImitationTrainer
