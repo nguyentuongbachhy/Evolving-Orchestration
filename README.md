@@ -1,17 +1,17 @@
 # Multi-Agent RL Orchestrator
 
-A Reinforcement Learning-based orchestrator for multi-agent collaboration, inspired by the **Puppeteer** model from "Multi-Agent Collaboration via Evolving Orchestration" research.
+Hệ thống điều phối đa tác nhân dựa trên Reinforcement Learning, lấy cảm hứng từ mô hình **Puppeteer** trong nghiên cứu "Multi-Agent Collaboration via Evolving Orchestration".
 
-## 🎯 Overview
+## 🎯 Tổng quan
 
-This project transforms static multi-agent systems into dynamic, learning-based orchestrators that can:
+Dự án này chuyển đổi các hệ thống đa tác nhân tĩnh thành các orchestrator học tập động có khả năng:
 
-- **Learn optimal agent selection** through reinforcement learning
-- **Reduce computational costs** while maintaining accuracy
-- **Adapt to different problem types** automatically
-- **Evolve collaboration patterns** over time
+- **Học cách chọn tác nhân tối ưu** thông qua reinforcement learning
+- **Giảm chi phí tính toán** trong khi duy trì độ chính xác
+- **Thích ứng với các loại bài toán khác nhau** một cách tự động
+- **Phát triển các mô hình hợp tác** theo thời gian
 
-## 🏗️ Architecture
+## 🏗️ Kiến trúc
 
 ```
 ┌─────────────────┐    ┌──────────────────┐     ┌─────────────────┐
@@ -23,132 +23,163 @@ This project transforms static multi-agent systems into dynamic, learning-based 
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │  Reward System  │    │  State Encoder   │    │ Research Agent  │
 │                 │    │                  │    │   Math Agent    │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+└─────────────────┘    └──────────────────┘    │   Code Agent    │
+                                               │  Summary Agent  │
+                                               └─────────────────┘
 ```
 
-## 📦 Installation
+## 📦 Cài đặt
 
-### Prerequisites
+### Yêu cầu hệ thống
 
 ```bash
 Python 3.8+
-PyTorch 1.9+
+PyTorch 2.0+
 ```
 
-### Setup
+### Thiết lập
 
 ```bash
 # Clone repository
 git clone https://github.com/nguyentuongbachhy/Evolving-Orchestration.git
 
-# Install dependencies
+# Cài đặt dependencies
 pip install -r requirements.txt
 
-# Set environment variables
+# Thiết lập biến môi trường
 export OPENAI_API_KEY="your-openai-key"
 export TAVILY_API_KEY="your-tavily-key"
 ```
 
-### Requirements.txt
-
-```txt
-torch>=1.9.0
-numpy>=1.20.0
-langchain>=0.1.0
-langchain-openai
-langchain-tavily
-langgraph>=0.1.0
-scikit-learn>=1.0.0
-```
-
-## 🚀 Quick Start
-
-### Full Pipeline
+### Tạo file .env
 
 ```bash
-# Run complete experiment
-python main.py --name "my_experiment" --problems math research
-
-# Results will be saved in outputs/my_experiment/
+cp .env.example .env
+# Chỉnh sửa .env với API keys của bạn
+OPENAI_API_KEY=your_openai_key_here
+TAVILY_API_KEY=your_tavily_key_here
 ```
 
-### Step-by-Step Execution
+## 🚀 Hướng dẫn sử dụng
+
+### Chạy toàn bộ pipeline
 
 ```bash
-# 1. Collect execution traces from original supervisor
-python main.py --step 1 --problems math research
+# Chạy thực nghiệm hoàn chỉnh
+python train.py
 
-# 2. Train RL orchestrator via imitation learning
-python main.py --step 2
-
-# 3. Fine-tune with reinforcement learning
-python main.py --step 3
-
-# 4. Benchmark performance comparison
-python main.py --step 4
+# Kết quả sẽ được lưu trong dataset/ và checkpoint/
 ```
 
-### Individual Components
+### Thực thi từng bước
+
+```bash
+# Bước 1: Thu thập dữ liệu từ original supervisor
+python train.py --step 1 --problems math research
+
+# Bước 2: Huấn luyện RL orchestrator qua imitation learning
+python train.py --step 2
+
+# Bước 3: Fine-tuning với reinforcement learning
+python train.py --step 3
+
+# Bước 4: So sánh hiệu suất
+python train.py --step 4
+```
+
+### Sử dụng RL Supervisor trực tiếp
 
 ```python
-from rl_supervisor import RLSupervisor
+from rl_supervisor import execute_task
 
-# Use RL supervisor directly
-supervisor = RLSupervisor(training_mode=False)
-result, info = supervisor.execute_task("What is 2**10 + 3 - 2**9?")
+# Sử dụng RL supervisor đã được huấn luyện
+result, info = execute_task("What is 2**10 + 3 - 2**9?")
 
-print(f"Result: {result}")
-print(f"Cost: {info['cost_stats']['total_cost']}")
-print(f"Agents used: {info['cost_stats']['agent_breakdown'].keys()}")
+print(f"Kết quả: {result}")
+print(f"Chi phí: {info['cost_stats']['total_cost']}")
+print(f"Các agent được sử dụng: {info['cost_stats']['agent_breakdown'].keys()}")
 ```
 
-## 🔄 Pipeline Steps
+### Chạy interactive mode
 
-### Step 1: Data Collection
+```bash
+# Chạy RL supervisor ở chế độ tương tác
+python rl_supervisor.py
+```
 
-Collects execution traces from the original static supervisor:
+## 🔄 Các bước trong Pipeline
 
-- **Input**: Test cases (math, research, mixed problems)
-- **Output**: `execution_traces.json` with agent sequences and costs
-- **Purpose**: Generate training data for RL orchestrator
+### Bước 1: Thu thập dữ liệu (Data Collection)
 
-### Step 2: Imitation Learning
+Thu thập execution traces từ original static supervisor:
 
-Pre-trains RL orchestrator to mimic original supervisor:
+- **Input**: Test cases (toán học, nghiên cứu, lập trình, hỗn hợp)
+- **Output**: `expert_traces.json` với chuỗi agents và chi phí
+- **Mục đích**: Tạo dữ liệu huấn luyện cho RL orchestrator
+
+### Bước 2: Imitation Learning
+
+Pre-train RL orchestrator để bắt chước original supervisor:
 
 - **Input**: Execution traces
-- **Method**: Supervised learning (cross-entropy loss)
+- **Phương pháp**: Supervised learning (cross-entropy loss)
 - **Output**: Pre-trained policy network
-- **Purpose**: Warm start for RL training
+- **Mục đích**: Khởi tạo cho RL training
 
-### Step 3: RL Fine-tuning
+### Bước 3: RL Fine-tuning
 
-Optimizes orchestrator using REINFORCE algorithm:
+Tối ưu orchestrator sử dụng thuật toán REINFORCE:
 
-- **Method**: Policy gradient with reward = accuracy - λ×cost
-- **Objective**: Maximize task success while minimizing computational cost
-- **Output**: Fully trained RL orchestrator
-- **Purpose**: Learn optimal agent selection strategies
+- **Phương pháp**: Policy gradient với reward = accuracy - λ×cost
+- **Mục tiêu**: Tối đa hóa thành công task và tối thiểu hóa chi phí tính toán
+- **Output**: RL orchestrator được huấn luyện hoàn chỉnh
+- **Mục đích**: Học các chiến lược chọn agent tối ưu
 
-### Step 4: Benchmarking
+### Bước 4: Benchmarking
 
-Compares original vs RL supervisor performance:
+So sánh hiệu suất original vs RL supervisor:
 
-- **Metrics**: Accuracy, execution time, cost, agent utilization
-- **Analysis**: Statistical significance, win rates, efficiency gains
-- **Output**: Comprehensive performance report
-- **Purpose**: Validate improvements and analyze behavior
+- **Metrics**: Độ chính xác, thời gian thực thi, chi phí, sử dụng agent
+- **Phân tích**: Ý nghĩa thống kê, tỷ lệ thắng, cải thiện hiệu suất
+- **Output**: Báo cáo hiệu suất toàn diện
+- **Mục đích**: Xác thực cải tiến và phân tích hành vi
 
-## 📊 Expected Results
+## 🤖 Các Agent trong hệ thống
 
-Based on the research paper, you should expect:
+### Research Agent
 
-- **Similar or better accuracy** (±2%)
-- **20-40% cost reduction** through smarter agent selection
-- **10-30% faster execution** via early termination
-- **More efficient agent utilization** patterns
+- **Chức năng**: Xử lý các task nghiên cứu, tìm kiếm thông tin
+- **Tools**: TavilySearch (tìm kiếm web)
+- **Ứng dụng**: Trả lời câu hỏi sự kiện, tìm kiếm thông tin mới
 
-### Sample Output
+### Math Agent
+
+- **Chức năng**: Xử lý các phép tính toán học
+- **Tools**: Math expression evaluator
+- **Ứng dụng**: Giải các bài toán số học, đại số
+
+### Code Agent
+
+- **Chức năng**: Xử lý các task lập trình
+- **Tools**: Python REPL
+- **Ứng dụng**: Viết và thực thi code Python, debug
+
+### Summary Agent
+
+- **Chức năng**: Tổng hợp kết quả từ các agent khác
+- **Tools**: Result synthesizer
+- **Ứng dụng**: Tạo câu trả lời cuối cùng, tổng hợp thông tin
+
+## 📊 Kết quả mong đợi
+
+Dựa trên nghiên cứu, bạn có thể mong đợi:
+
+- **Độ chính xác tương đương hoặc tốt hơn** (±2%)
+- **Giảm 20-40% chi phí** thông qua việc chọn agent thông minh hơn
+- **Nhanh hơn 10-30%** qua việc kết thúc sớm
+- **Sử dụng agent hiệu quả hơn**
+
+### Mẫu Output
 
 ```json
 {
@@ -164,183 +195,319 @@ Based on the research paper, you should expect:
     "rl_better_accuracy": 0.6,
     "rl_faster": 0.73,
     "rl_cheaper": 0.8
+  },
+  "orchestration_metrics": {
+    "agent_diversity": 0.75,
+    "graph_density": 0.6,
+    "reasoning_depth": 3,
+    "cycle_count": 0
   }
 }
 ```
 
-## 📁 Project Structure
+## 📁 Cấu trúc Project
 
 ```
-evolving-orchestration/
-├── README.md
-├── requirements.txt
-├── main.py                     # Main pipeline orchestrator
-├── original_supervisor.py      # Your existing static supervisor
-├── rl_supervisor.py            # New RL-based supervisor
-├── test_cases.py              # Test case definitions
-├── data_collector.py          # Step 1: Data collection
-├── imitation_trainer.py       # Step 2: Imitation learning
-├── benchmark_pipeline.py      # Step 4: Performance comparison
+seminar/
+├── README.md                   # File hướng dẫn này
+├── requirements.txt           # Danh sách dependencies
+├── .env.example              # Template cho environment variables
+├── langgraph.json            # Cấu hình LangGraph
+├── train.py                  # Main training pipeline
+├── original_supervisor.py    # Original static supervisor
+├── rl_supervisor.py         # RL-based supervisor
 │
-├── orchestration/
-│   ├── rl_orchestrator.py     # RL orchestrator core
-│   ├── reward_system.py       # Reward calculation
-│   └── training_manager.py    # RL training management
+├── orchestration/           # Core RL orchestration logic
+│   ├── rl_orchestrator.py  # RL orchestrator với PolicyNetwork
+│   ├── reward_system.py    # Hệ thống tính reward
+│   └── training_manager.py # Quản lý RL training
 │
-├── utils/
-│   ├── cost_tracker.py        # Cost tracking utilities
-│   └── logger.py             # Logging utilities
+├── train/                  # Training modules
+│   ├── data_collector.py   # Thu thập dữ liệu từ original supervisor
+│   ├── imitation_trainer.py # Imitation learning trainer
+│   └── benchmark_pipeline.py # So sánh hiệu suất
 │
-└── outputs/                   # Generated results
-    └── experiment_name/
-        ├── execution_traces.json
-        ├── pretrained_orchestrator.pth
-        ├── rl_trained_model.pth
-        ├── benchmark_results.json
-        └── pipeline_summary.json
+├── test/                   # Test cases và testing utilities
+│   ├── testcases.py       # Định nghĩa các test case
+│   └── __init__.py
+│
+├── utils/                  # Utilities
+│   └── cost_tracker.py    # Theo dõi chi phí API calls
+│
+├── dataset/               # Generated training data
+│   ├── expert_traces.json # Expert demonstrations
+│   ├── collection_stats.json
+│   ├── training_results.json
+│   └── benchmark_results.json
+│
+├── checkpoint/            # Model checkpoints
+│   └── orchestrator.pth  # Trained RL orchestrator
+│
+└── .langgraph_api/       # LangGraph runtime data
+    └── store.pckl
 ```
 
-## 🛠️ Configuration
+## 🛠️ Cấu hình
 
-### Hyperparameters
+### Hyperparameters chính
 
 ```python
-# In main.py or component files
-LEARNING_RATE = 0.001          # Policy network learning rate
-LAMBDA_COST = 0.1              # Cost-accuracy tradeoff
-BATCH_SIZE = 16                # Training batch size
-NUM_EPOCHS = 100               # Imitation learning epochs
-RL_EPISODES = 20               # RL fine-tuning episodes
+# Trong train.py và các component
+LEARNING_RATE = 0.001          # Learning rate cho policy network
+LAMBDA_COST = 0.1              # Trọng số tradeoff cost-accuracy
+BATCH_SIZE = 16                # Batch size cho training
+NUM_EPOCHS = 100               # Số epoch cho imitation learning
+RL_EPISODES = 20               # Số episode cho RL fine-tuning
+HIDDEN_DIM = 256               # Kích thước hidden layer
 ```
 
-### Problem Types
+### Loại bài toán hỗ trợ
 
 ```python
-# Supported problem categories
-PROBLEM_TYPES = ["math", "research", "mixed"]
+# Các loại problem được hỗ trợ
+PROBLEM_TYPES = ["math", "research", "code", "mixed"]
 
-# Add custom test cases in test_cases.py
-TestCases.get_math_problems()     # Mathematical calculations
-TestCases.get_research_problems() # Factual questions
-TestCases.get_mixed_problems()    # Multi-step tasks
+# Trong test/testcases.py:
+TestCases.get_math_test_cases()     # Bài toán tính toán
+TestCases.get_research_test_cases() # Câu hỏi sự kiện
+TestCases.get_code_test_cases()     # Bài toán lập trình
+TestCases.get_mixed_test_cases()    # Bài toán đa bước
 ```
 
-## 📈 Monitoring & Analysis
+### Policy Network Architecture
 
-### Training Progress
+```python
+# Multi-layer với attention mechanism
+class PolicyNetwork(nn.Module):
+    - State embedding layer
+    - Multi-head attention
+    - Agent-specific projection
+    - Temperature-controlled softmax
+    - Entropy regularization
+```
+
+## 📈 Theo dõi & Phân tích
+
+### Theo dõi quá trình training
 
 ```bash
-# View training logs
-tail -f outputs/experiment_name/training.log
+# Xem training logs
+tail -f dataset/training_results.json
 
-# Analyze results
+# Phân tích kết quả
 python -c "
 import json
-with open('outputs/experiment_name/benchmark_results.json') as f:
+with open('dataset/benchmark_results.json') as f:
     results = json.load(f)
-print('Accuracy improvement:', results['comprehensive_report']['summary']['accuracy_improvement'])
-print('Cost reduction:', results['comprehensive_report']['summary']['avg_cost_improvement'])
+print('Cải thiện độ chính xác:', results['comprehensive_report']['summary']['accuracy_improvement'])
+print('Giảm chi phí:', results['comprehensive_report']['summary']['avg_cost_improvement'])
 "
 ```
 
-### Visualization
+### Metrics theo dõi
 
 ```python
-# Plot training curves (optional)
+# Orchestration metrics được track:
+- Agent diversity: Đa dạng trong việc chọn agent
+- Graph density: Mật độ kết nối giữa các agent
+- Reasoning depth: Độ sâu suy luận
+- Cycle count: Số lượng chu kỳ lặp
+- Agent usage: Thống kê sử dụng từng agent
+
+# Cost metrics:
+- Total cost: Tổng chi phí API
+- Agent breakdown: Chi phí theo từng agent
+- Time efficiency: Hiệu suất thời gian
+```
+
+### Visualization (tùy chọn)
+
+```python
+# Vẽ biểu đồ training progress
 import matplotlib.pyplot as plt
 import json
 
-with open('outputs/experiment_name/rl_training_results.json') as f:
+with open('dataset/training_results.json') as f:
     data = json.load(f)
 
-rewards = [ep['reward'] for ep in data['training_results']]
-plt.plot(rewards)
-plt.title('RL Training Progress')
-plt.xlabel('Episode')
-plt.ylabel('Reward')
-plt.show()
+# Plot reward curve nếu có
+if 'rl_training' in data:
+    rewards = data['rl_training']['episode_rewards']
+    plt.plot(rewards)
+    plt.title('RL Training Progress')
+    plt.xlabel('Episode')
+    plt.ylabel('Reward')
+    plt.show()
 ```
 
-## 🤝 Contributing
+## 🤝 Mở rộng hệ thống
 
-### Adding New Agents
+### Thêm Agent mới
 
 ```python
-# In rl_supervisor.py
-def calculate_custom_function(expression: str) -> str:
-    # Your custom agent logic
+# Trong rl_supervisor.py
+from langchain_core.tools import tool
+
+@tool
+def custom_function(input_data: str) -> str:
+    """Mô tả chức năng của tool"""
+    # Logic xử lý của bạn
     return result
 
+# Tạo agent mới
 custom_agent = create_react_agent(
     model="openai:gpt-4o-mini",
-    tools=[calculate_custom_function],
-    prompt="You are a custom agent...",
+    tools=[custom_function],
+    prompt=(
+        "You are a custom agent. "
+        "Assist ONLY custom-related tasks, DO NOT do any else. "
+        "After you're done with your tasks, respond to the supervisor directly. "
+        "Respond ONLY with the results of your work, do NOT include ANY other text."
+    ),
     name="custom_agent"
 )
 
-# Update agent list
-self.agents["custom_agent"] = custom_agent
+# Cập nhật danh sách agents
+agents["custom_agent"] = custom_agent
+
+# Cập nhật orchestrator
+orchestrator = RLOrchestrator(agent_names=list(agents.keys()))
 ```
 
-### Adding New Test Cases
+### Thêm Test Cases mới
 
 ```python
-# In testcases.py
+# Trong test/testcases.py
 @staticmethod
-def get_custom_problems():
+def get_custom_test_cases() -> List[Tuple[str, str]]:
+    """Custom test cases for your domain"""
     return [
         ("Your custom task", "expected_answer"),
-        # Add more tasks...
+        ("Another custom task", "another_answer"),
+        # Thêm nhiều task hơn...
     ]
+
+# Cập nhật get_all_test_cases()
+@staticmethod
+def get_all_test_cases() -> Dict[str, List[Tuple[str, str]]]:
+    return {
+        "math": TestCases.get_math_test_cases(),
+        "research": TestCases.get_research_test_cases(),
+        "code": TestCases.get_code_test_cases(),
+        "mixed": TestCases.get_mixed_test_cases(),
+        "custom": TestCases.get_custom_test_cases()  # Thêm dòng này
+    }
 ```
 
-## 🐛 Troubleshooting
+## 🐛 Xử lý sự cố
 
-### Common Issues
+### Các vấn đề thường gặp
 
-**"No traces collected"**
+**"Không thu thập được traces"**
 
-- Ensure API keys are set correctly
-- Check original supervisor runs successfully
-- Verify test cases are appropriate
+- Kiểm tra API keys đã được set đúng trong .env
+- Kiểm tra original supervisor chạy thành công
+- Xác minh test cases phù hợp và đúng format
 
-**"Low imitation accuracy"**
+**"Độ chính xác imitation learning thấp"**
 
-- Increase training epochs
-- Reduce learning rate
-- Check trace data quality
+- Tăng số epoch training
+- Giảm learning rate
+- Kiểm tra chất lượng dữ liệu trace
+- Đảm bảo dữ liệu đủ đa dạng
 
-**"RL not improving"**
+**"RL không cải thiện"**
 
-- Adjust lambda_cost parameter
-- Verify reward function
-- Check training data diversity
+- Điều chỉnh tham số lambda_cost
+- Kiểm tra reward function
+- Kiểm tra đa dạng dữ liệu training
+- Tăng số episode training
 
-**"Benchmark fails"**
+**"Benchmark thất bại"**
 
-- Ensure both supervisors use same API keys
-- Check model file paths exist
-- Verify test case format
+- Đảm bảo cả hai supervisor sử dụng cùng API keys
+- Kiểm tra checkpoint file tồn tại
+- Xác minh format test case đúng
 
-## 📚 References
+**"CUDA out of memory"**
 
-- [Multi-Agent Collaboration via Evolving Orchestration](link-to-paper)
+- Giảm batch size
+- Sử dụng CPU thay vì GPU: `device = "cpu"`
+- Giảm hidden_dim của PolicyNetwork
+
+**"API rate limit"**
+
+- Thêm delay giữa các API call
+- Sử dụng API key có rate limit cao hơn
+- Giảm số test case để test
+
+## � Chi tiết kỹ thuật
+
+### PolicyNetwork Architecture
+
+```python
+class PolicyNetwork(nn.Module):
+    def __init__(self, state_dim: int, num_agents: int, hidden_dim: int = 256):
+        # Multi-layer architecture với:
+        - State embedding với LayerNorm và SiLU activation
+        - Multi-head attention mechanism (8 heads)
+        - Agent-specific projection layers
+        - Temperature-controlled softmax cho exploration
+        - Dropout cho regularization
+```
+
+### Reward System
+
+```python
+# Reward = Task Success - λ * Cost
+reward = success_reward - lambda_cost * normalized_cost
+
+# Với:
+- success_reward: 1.0 nếu thành công, 0.0 nếu thất bại
+- lambda_cost: Trọng số balance accuracy/cost (default: 0.1)
+- normalized_cost: Chi phí được chuẩn hóa theo baseline
+```
+
+### State Representation
+
+```python
+# State bao gồm:
+- Task embedding (từ nội dung task)
+- History của agent selections
+- Current message context
+- Agent usage statistics
+- Cost accumulation
+```
+
+## 📚 Tài liệu tham khảo
+
+- [Multi-Agent Collaboration via Evolving Orchestration](https://arxiv.org/abs/2310.00615)
 - [LangChain Documentation](https://python.langchain.com/)
+- [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
 - [PyTorch RL Tutorial](https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html)
+- [REINFORCE Algorithm](https://spinningup.openai.com/en/latest/algorithms/vpg.html)
 
 ## 📄 License
 
-MIT License - see LICENSE file for details.
+MIT License - xem LICENSE file để biết chi tiết.
 
-## 🙋‍♂️ Support
+## 🙋‍♂️ Hỗ trợ
 
-For questions or issues:
+Để được hỗ trợ khi gặp vấn đề:
 
-1. Check troubleshooting section above
-2. Review existing issues in repository
-3. Create new issue with detailed error logs
-4. Include your environment details and configuration
+1. Kiểm tra phần troubleshooting ở trên
+2. Xem các issue đã có trong repository
+3. Tạo issue mới với error logs chi tiết
+4. Bao gồm thông tin môi trường và cấu hình
+
+## 🎯 Roadmap
+
+- [ ] Thêm hỗ trợ cho multi-modal agents
+- [ ] Tích hợp với các LLM khác (Claude, Gemini)
+- [ ] Web UI để monitor training process
+- [ ] Distributed training cho datasets lớn
+- [ ] Advanced reward shaping strategies
 
 ---
 
-**Happy orchestrating! 🎭**
+**Chúc bạn orchestrating vui vẻ! 🎭**
