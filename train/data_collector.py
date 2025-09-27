@@ -8,7 +8,7 @@ from original_supervisor import supervisor_with_description
 from test.testcases import TestCases
 
 class DataCollector:
-    def __init__(self, output_file: str = "execution_traces.json"):
+    def __init__(self, output_file: str = "dataset/expert_traces.json"):
         self.output_file = output_file
         self.traces = []
         
@@ -91,7 +91,7 @@ class DataCollector:
         self.save_traces()
         return batch_traces
     
-    def collect_from_test_cases(self, problem_types: List[str] = ["math", "research", "mixed"]) -> Dict:
+    def collect_from_test_cases(self, problem_types: List[str] = ["math", "research"]) -> Dict:
         all_test_cases = TestCases.get_all_test_cases()
         
         collection_results = {
@@ -174,7 +174,7 @@ class DataCollector:
         return agent_stats
 
 if __name__ == "__main__":
-    collector = DataCollector("execution_traces.json")
+    collector = DataCollector("dataset/expert_traces.json")
     
     results = collector.collect_from_test_cases(["math", "research"])
     

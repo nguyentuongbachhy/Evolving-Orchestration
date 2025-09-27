@@ -1,0 +1,583 @@
+{
+  "benchmark_results": [
+    {
+      "task": "What is 2**10 + 3 - 2**9?",
+      "expected_answer": "515",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The result of the calculation \\( 2^{10} + 3 - 2^{9} \\) is 515.",
+      "original_time": 2.467528820037842,
+      "enhanced_time": 8.851512432098389,
+      "original_cost": 0,
+      "enhanced_cost": 9,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 1.0
+    },
+    {
+      "task": "Calculate 15 * 8 + 47",
+      "expected_answer": "167",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "167",
+      "original_time": 1.1689388751983643,
+      "enhanced_time": 11.626141786575317,
+      "original_cost": 0,
+      "enhanced_cost": 9,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 1.0
+    },
+    {
+      "task": "What is the square root of 144?",
+      "expected_answer": "12",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "Error: Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT",
+      "original_time": 1.0214459896087646,
+      "enhanced_time": 13.811703443527222,
+      "original_cost": 0,
+      "enhanced_cost": 0,
+      "original_agents": [],
+      "enhanced_agents": [],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "Solve: 25 * 4 - 18",
+      "expected_answer": "82",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "Error: Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT",
+      "original_time": 1.343475103378296,
+      "enhanced_time": 12.408450603485107,
+      "original_cost": 0,
+      "enhanced_cost": 0,
+      "original_agents": [],
+      "enhanced_agents": [],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "What is 7**3 + 5**2?",
+      "expected_answer": "368",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "Error: Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT",
+      "original_time": 1.51959228515625,
+      "enhanced_time": 13.94407343864441,
+      "original_cost": 0,
+      "enhanced_cost": 0,
+      "original_agents": [],
+      "enhanced_agents": [],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "Calculate (100 - 25) / 5",
+      "expected_answer": "15",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "Error: Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT",
+      "original_time": 1.10658597946167,
+      "enhanced_time": 15.429903507232666,
+      "original_cost": 0,
+      "enhanced_cost": 0,
+      "original_agents": [],
+      "enhanced_agents": [],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "What is 3.14 * 10**2?",
+      "expected_answer": "314",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "Error: Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT",
+      "original_time": 1.3125879764556885,
+      "enhanced_time": 19.75091552734375,
+      "original_cost": 0,
+      "enhanced_cost": 0,
+      "original_agents": [],
+      "enhanced_agents": [],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "Solve: 2**8 - 2**6",
+      "expected_answer": "192",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The result of the calculation 2**8 - 2**6 is 192.",
+      "original_time": 1.2491860389709473,
+      "enhanced_time": 6.513127565383911,
+      "original_cost": 0,
+      "enhanced_cost": 6,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 1.0
+    },
+    {
+      "task": "What is 9! / 8!?",
+      "expected_answer": "9",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "9.0",
+      "original_time": 0.9473481178283691,
+      "enhanced_time": 4.551724672317505,
+      "original_cost": 0,
+      "enhanced_cost": 4,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 1.0
+    },
+    {
+      "task": "Calculate 45 + 67 - 23",
+      "expected_answer": "89",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "Error: Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT",
+      "original_time": 1.1430327892303467,
+      "enhanced_time": 14.82674241065979,
+      "original_cost": 0,
+      "enhanced_cost": 0,
+      "original_agents": [],
+      "enhanced_agents": [],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "What is 12**2 + 13**2?",
+      "expected_answer": "313",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "Error: Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT",
+      "original_time": 1.0473511219024658,
+      "enhanced_time": 12.869287729263306,
+      "original_cost": 0,
+      "enhanced_cost": 0,
+      "original_agents": [],
+      "enhanced_agents": [],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "Solve: 1000 / 25 + 15",
+      "expected_answer": "55",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "Error: Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT",
+      "original_time": 1.7360055446624756,
+      "enhanced_time": 14.469008922576904,
+      "original_cost": 0,
+      "enhanced_cost": 0,
+      "original_agents": [],
+      "enhanced_agents": [],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "What is 6 * 7 * 8?",
+      "expected_answer": "336",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "6 * 7 * 8 = 336",
+      "original_time": 1.262690782546997,
+      "enhanced_time": 8.432447910308838,
+      "original_cost": 0,
+      "enhanced_cost": 9,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 1.0
+    },
+    {
+      "task": "Calculate 2**16",
+      "expected_answer": "65536",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "2**16 equals 65536.",
+      "original_time": 0.9398455619812012,
+      "enhanced_time": 4.944590091705322,
+      "original_cost": 0,
+      "enhanced_cost": 4,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 1.0
+    },
+    {
+      "task": "What is 99 + 1 - 50?",
+      "expected_answer": "50",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "Error: Recursion limit of 25 reached without hitting a stop condition. You can increase the limit by setting the `recursion_limit` config key.\nFor troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT",
+      "original_time": 1.0006511211395264,
+      "enhanced_time": 14.07978367805481,
+      "original_cost": 0,
+      "enhanced_cost": 0,
+      "original_agents": [],
+      "enhanced_agents": [],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "What is the capital of France?",
+      "expected_answer": "Paris",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "4, 30, 2.0",
+      "original_time": 0.9935421943664551,
+      "enhanced_time": 7.497914791107178,
+      "original_cost": 0,
+      "enhanced_cost": 5,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "Who invented the telephone?",
+      "expected_answer": "Alexander Graham Bell",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The telephone was invented by Alexander Graham Bell in 1876.",
+      "original_time": 1.3382141590118408,
+      "enhanced_time": 4.651425838470459,
+      "original_cost": 0,
+      "enhanced_cost": 5,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 1.0
+    },
+    {
+      "task": "What year was Python programming language created?",
+      "expected_answer": "1991",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The Python programming language was created in 1991.",
+      "original_time": 1.7162089347839355,
+      "enhanced_time": 5.177518606185913,
+      "original_cost": 0,
+      "enhanced_cost": 5,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "What is the largest planet in our solar system?",
+      "expected_answer": "Jupiter",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The largest planet in our solar system is Jupiter.",
+      "original_time": 1.339257001876831,
+      "enhanced_time": 5.21895432472229,
+      "original_cost": 0,
+      "enhanced_cost": 5,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "Who wrote the novel '1984'?",
+      "expected_answer": "George Orwell",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The novel '1984' was written by George Orwell.",
+      "original_time": 1.6476874351501465,
+      "enhanced_time": 6.812899589538574,
+      "original_cost": 0,
+      "enhanced_cost": 10,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.5
+    },
+    {
+      "task": "What is the chemical symbol for gold?",
+      "expected_answer": "Au",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The chemical symbol for gold is \"Au\".",
+      "original_time": 1.0605766773223877,
+      "enhanced_time": 6.146945953369141,
+      "original_cost": 0,
+      "enhanced_cost": 8,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "In what year did World War II end?",
+      "expected_answer": "1945",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "World War II ended in 1945.",
+      "original_time": 1.2677650451660156,
+      "enhanced_time": 5.165054082870483,
+      "original_cost": 0,
+      "enhanced_cost": 9,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "What is the fastest land animal?",
+      "expected_answer": "Cheetah",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The fastest land animal is the Cheetah.",
+      "original_time": 1.3959176540374756,
+      "enhanced_time": 6.413205862045288,
+      "original_cost": 0,
+      "enhanced_cost": 5,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "Who painted the Mona Lisa?",
+      "expected_answer": "Leonardo da Vinci",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The Mona Lisa was painted by Leonardo da Vinci.",
+      "original_time": 1.1626148223876953,
+      "enhanced_time": 5.053455114364624,
+      "original_cost": 0,
+      "enhanced_cost": 7,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.6666666666666666
+    },
+    {
+      "task": "What is the smallest country in the world?",
+      "expected_answer": "Vatican City",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The smallest country in the world is Vatican City, with an area of 0.49 square kilometers.",
+      "original_time": 1.1195430755615234,
+      "enhanced_time": 8.1490797996521,
+      "original_cost": 0,
+      "enhanced_cost": 11,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "What element has the atomic number 1?",
+      "expected_answer": "Hydrogen",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The element with atomic number 1 is Hydrogen.",
+      "original_time": 1.381728172302246,
+      "enhanced_time": 6.670900344848633,
+      "original_cost": 0,
+      "enhanced_cost": 5,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "In what year was the Internet invented?",
+      "expected_answer": "1969",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The Internet is considered to have been invented on January 1, 1983, when its core protocols (TCP/IP) were adopted. However, its development began earlier in the late 1960s.",
+      "original_time": 1.1572203636169434,
+      "enhanced_time": 15.947495937347412,
+      "original_cost": 0,
+      "enhanced_cost": 11,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "What is the hardest natural substance?",
+      "expected_answer": "Diamond",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "10",
+      "original_time": 1.1418428421020508,
+      "enhanced_time": 24.859007835388184,
+      "original_cost": 0,
+      "enhanced_cost": 6,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    },
+    {
+      "task": "Who developed the theory of relativity?",
+      "expected_answer": "Albert Einstein",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The theory of relativity was developed by Albert Einstein.",
+      "original_time": 1.1586472988128662,
+      "enhanced_time": 10.371108770370483,
+      "original_cost": 0,
+      "enhanced_cost": 6,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.5
+    },
+    {
+      "task": "What is the currency of Japan?",
+      "expected_answer": "Yen",
+      "original_result": "Error: argument of type 'NoneType' is not iterable",
+      "enhanced_result": "The currency of Japan is the Japanese yen, abbreviated as JPY.",
+      "original_time": 0.9657573699951172,
+      "enhanced_time": 5.285761833190918,
+      "original_cost": 0,
+      "enhanced_cost": 5,
+      "original_agents": [],
+      "enhanced_agents": [
+        "research_agent",
+        "math_agent",
+        "code_agent",
+        "summary_agent",
+        "terminate"
+      ],
+      "original_accuracy": 0.0,
+      "enhanced_accuracy": 0.0
+    }
+  ],
+  "comprehensive_report": {
+    "summary": {
+      "total_tasks": 30,
+      "original_avg_accuracy": 0.0,
+      "enhanced_avg_accuracy": 0.28888888888888886,
+      "accuracy_improvement": 0.28888888888888886,
+      "original_avg_time": 1.2704263051350912,
+      "enhanced_avg_time": 9.997671413421632,
+      "avg_time_improvement": -7.234830691995712,
+      "original_avg_cost": 0.0,
+      "enhanced_avg_cost": 4.8,
+      "avg_cost_improvement": 0.0
+    },
+    "win_rates": {
+      "enhanced_better_accuracy": 0.3333333333333333,
+      "enhanced_faster": 0.0,
+      "enhanced_cheaper": 0.0
+    },
+    "agent_usage_analysis": {
+      "original_usage": {},
+      "enhanced_usage": {
+        "research_agent": 21,
+        "math_agent": 21,
+        "code_agent": 21,
+        "summary_agent": 21,
+        "terminate": 21
+      },
+      "usage_efficiency": {
+        "original_avg_agents_per_task": 0.0,
+        "enhanced_avg_agents_per_task": 3.5
+      }
+    }
+  }
+}

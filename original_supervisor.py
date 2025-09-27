@@ -3,51 +3,75 @@
 from dotenv import load_dotenv
 load_dotenv()
 
+import math
 from langchain_tavily import TavilySearch
+from langchain_experimental.tools import PythonREPLTool
+from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
 
+@tool
+def calculate_math_expression(expression: str) -> float:
+    "Evaluates a math expression given as a string and returns the number."
+    allowed = {k: v for k, v in math.__dict__.items() if not k.startswith('__')}
+    allowed.update({"abs": abs, "round": round, "pow": pow, "min": min, "max": max})
+    return eval(expression, {"__builtin__": {}}, allowed)
+
+@tool
+def summarize_results(context: str) -> str:
+    """Summarize and synthesize results from multiple agents into final answer"""
+    return f"Final synthesis: {context}"
+
 web_search = TavilySearch(max_results=3)
+python_repl = PythonREPLTool()
 
 research_agent = create_react_agent(
     model="openai:gpt-4o-mini",
     tools=[web_search],
     prompt=(
-        "You are a research agent.\n\n"
-        "INSTRUCTION:\n"
-        "- Assist ONLY research-related tasks, DO NOT do any else.\n"
-        "- After you're done with your tasks, respond to the supervisor directly.\n"
-        "- Respond ONLY with the results of your work, do NOT include ANY other text."
+        "You are a research agent. "
+        "Assist ONLY research-related tasks, DO NOT do any else. "
+        "After you're done with your tasks, respond to the supervisor directly. "
+        "Respond ONLY with the results of your work, do NOT include ANY other text."
     ),
     name="research_agent"
 )
-
-
-
-
-
-import math
-
-def calculate_math_expression(expression: str) -> float:
-    """
-    Calculate a mathematical expresison and return a float number
-    Args:
-        expression: A mathematical expression given as a string
-    """
-    allowed = {k: v for k, v in math.__dict__.items() if not k.startswith('__')}
-    allowed.update({"abs": abs, "round": round, "pow": pow, "min": min, "max": max})
-    return eval(expression, {"__builtin__": {}}, allowed)
 
 math_agent = create_react_agent(
     model="openai:gpt-4o-mini",
     tools=[calculate_math_expression],
     prompt=(
-        "You are a math agent.\n\n"
-        "INSTRUCTION:\n"
-        "- Assist ONLY math-related tasks, DO NOT do any else.\n"
-        "-After you're done with your tasks, respond to the supervisor directly.\n"
-        "- Respond ONLY with the results of your woork, do NOT include ANY other text."
+        "You are a math agent. "
+        "Assist ONLY math-related tasks, DO NOT do any else. "
+        "After you're done with your tasks, respond to the supervisor directly. "
+        "Respond ONLY with the results of your work, do NOT include ANY other text."
     ),
     name="math_agent"
+)
+
+code_agent = create_react_agent(
+    model="openai:gpt-4o-mini",
+    tools=[python_repl],
+    prompt=(
+        "You are a code agent. "
+        "Assist ONLY programming and code-related tasks, DO NOT do any else. "
+        "Write and execute Python code to solve problems. "
+        "After you're done with your tasks, respond to the supervisor directly. "
+        "Respond ONLY with the results of your work, do NOT include ANY other text."
+    ),
+    name="code_agent"
+)
+
+summary_agent = create_react_agent(
+    model="openai:gpt-4o-mini",
+    tools=[summarize_results],
+    prompt=(
+        "You are a summary agent. "
+        "Synthesize and summarize results from other agents into a final answer. "
+        "Provide clear, concise, and well-structured final responses. "
+        "After you're done with your tasks, respond to the supervisor directly. "
+        "Respond ONLY with the results of your work, do NOT include ANY other text."
+    ),
+    name="summary_agent"
 )
 
 from typing import Annotated
@@ -88,6 +112,8 @@ supervisor_agent = create_react_agent(
         "You are a supervisor managing two agents:\n"
         "- a research agent. Assign research-related tasks to this agent\n"
         "- a math agent. Assign math-related tasks to this agent\n"
+        "- a code agent. Assign code-related tasks to this agent\n"
+        "- a summary agent. Assign summary-related tasks to this agent\n"
         "Assign work to one agent at a time, do not call agents in parallel.\n"
         "Do not do any work yourself."
     ),
@@ -96,18 +122,17 @@ supervisor_agent = create_react_agent(
 
 from langgraph.graph import END
 
-supervisor = (
-    StateGraph(MessagesState)
-    .add_node(supervisor_agent, destinations=["research_agent", "math_agent", END])
-    .add_node(research_agent)
-    .add_node(math_agent)
-    .add_edge(START, "supervisor")
-    .add_edge("research_agent", "supervisor")
-    .add_edge("math_agent", "supervisor")
-    .compile()
-)
-
-# IPython display removed for script compatibility
+# supervisor = (
+#     StateGraph(MessagesState)
+#     .add_node(supervisor_agent, destinations=["research_agent", "math_agent", "code_agent", "summary_agent", END])
+#     .add_node(research_agent)
+#     .add_node(math_agent)
+#     .add_node(code_agent)
+#     .add_node(summary_agent)
+#     .add_edge(START, "supervisor")
+#     .add_edge(["research_agent", "math_agent", "code_agent", "summary_agent"], "supervisor")
+#     .compile()
+# )
 
 from langgraph.types import Send
 
@@ -136,8 +161,10 @@ supervisor_agent_with_description = create_react_agent(
     tools=[assign_to_research_with_description, assign_to_math_with_description],
     prompt=(
         "You are a supervisor managing two agents:\n"
-        "- a research agent. Assign research-related tasks to this assistant\n"
-        "- a math agent. Assign math-related tasks to this assistant\n"
+        "- a research agent. Assign research-related tasks to this agent\n"
+        "- a math agent. Assign math-related tasks to this agent\n"
+        "- a code agent. Assign code-related tasks to this agent\n"
+        "- a summary agent. Assign summary-related tasks to this agent\n"
         "Assign work to one agent at a time, do not call agents in parallel.\n"
         "Do not do any work yourself."
     ),
@@ -146,16 +173,15 @@ supervisor_agent_with_description = create_react_agent(
 
 supervisor_with_description = (
     StateGraph(MessagesState)
-    .add_node(supervisor_agent_with_description, destinations=["research_agent", "math_agent", END])
+    .add_node(supervisor_agent_with_description, destinations=["research_agent", "math_agent", "code_agent", "summary_agent", END])
     .add_node(research_agent)
     .add_node(math_agent)
+    .add_node(code_agent)
+    .add_node(summary_agent)
     .add_edge(START, "supervisor")
-    .add_edge("research_agent", "supervisor")
-    .add_edge("math_agent", "supervisor")
+    .add_edge(["research_agent", "math_agent", "code_agent", "summary_agent"], "supervisor")
     .compile()
 )
-
-# IPython display removed for script compatibility
 
 from langchain_core.messages import convert_to_messages
 
@@ -194,5 +220,3 @@ def pretty_print_messages(update, last_message=False):
         for m in messages:
             pretty_print_message(m, indent=is_subgraph)
         print("\n")
-
-# Test code removed - should be run only when needed

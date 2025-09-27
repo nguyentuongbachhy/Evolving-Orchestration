@@ -1,35 +1,55 @@
 #!/usr/bin/env python
 import json
 import time
+import torch
 import numpy as np
 from typing import List, Dict, Any
 from dataclasses import dataclass
 from original_supervisor import supervisor_with_description
-from rl_supervisor import RLSupervisor
+from rl_supervisor import agents
+from orchestration.rl_orchestrator import RLOrchestrator
+from utils.cost_tracker import CostTracker
 from test.testcases import TestCases
-from langchain_core.messages import convert_to_messages
+from langchain_core.messages import convert_to_messages, HumanMessage
 
 @dataclass
 class BenchmarkResult:
     task: str
     expected_answer: str
     original_result: str
-    rl_result: str
+    enhanced_result: str
     original_time: float
-    rl_time: float
+    enhanced_time: float
     original_cost: int
-    rl_cost: int
+    enhanced_cost: int
     original_agents: List[str]
-    rl_agents: List[str]
+    enhanced_agents: List[str]
     original_accuracy: float
-    rl_accuracy: float
+    enhanced_accuracy: float
 
 class BenchmarkPipeline:
-    def __init__(self, rl_supervisor: RLSupervisor, output_file: str = "benchmark_results.json"):
-        self.rl_supervisor = rl_supervisor
+    def __init__(self, output_file: str = "dataset/benchmark_results.json"):
         self.output_file = output_file
         self.results = []
         
+        # Setup enhanced orchestrator
+        self.enhanced_orchestrator = RLOrchestrator(agent_names=list(agents.keys()))
+        self._load_checkpoint()
+        
+    def _load_checkpoint(self, checkpoint_path: str = "checkpoint/orchestrator.pth"):
+        """Load trained orchestrator checkpoint"""
+        try:
+            if torch.cuda.is_available():
+                checkpoint = torch.load(checkpoint_path)
+            else:
+                checkpoint = torch.load(checkpoint_path, map_location='cpu')
+                
+            self.enhanced_orchestrator.policy_net.load_state_dict(checkpoint['policy_net_state_dict'])
+            print(f"✅ Loaded trained orchestrator from {checkpoint_path}")
+        except Exception as e:
+            print(f"⚠️ Could not load checkpoint: {e}")
+            print("🔄 Using untrained orchestrator for comparison")
+    
     def run_original_supervisor(self, task: str) -> Dict[str, Any]:
         start_time = time.time()
         
@@ -79,19 +99,58 @@ class BenchmarkPipeline:
             "success": len(agent_calls) > 0
         }
     
-    def run_rl_supervisor(self, task: str) -> Dict[str, Any]:
+    def run_enhanced_supervisor(self, task: str) -> Dict[str, Any]:
         start_time = time.time()
         
         try:
-            result, episode_info = self.rl_supervisor.execute_task(task)
+            cost_tracker = CostTracker()
+            cost_tracker.start_episode()
+            
+            messages = [HumanMessage(content=task)]
+            result = ""
+            step_count = 0
+            max_steps = 5
+            
+            self.enhanced_orchestrator.reset_episode()
+            
+            while step_count < max_steps:
+                selected_agent = self.enhanced_orchestrator.select_agent(messages)
+                
+                if selected_agent == "terminate":
+                    break
+                    
+                if selected_agent not in agents:
+                    break
+                    
+                agent_result = agents[selected_agent].invoke({"messages": messages})
+                
+                if agent_result and "messages" in agent_result:
+                    new_messages = agent_result["messages"]
+                    if new_messages:
+                        last_message = new_messages[-1]
+                        result = last_message.content
+                        
+                        tokens_used = len(result.split()) * 1.3
+                        cost_tracker.log_agent_call(
+                            selected_agent, 
+                            int(tokens_used), 
+                            0.1
+                        )
+                        
+                        messages.extend(new_messages)
+                        
+                step_count += 1
+            
             execution_time = time.time() - start_time
+            orchestration_metrics = self.enhanced_orchestrator.get_orchestration_metrics()
             
             return {
                 "result": result,
                 "execution_time": execution_time,
-                "total_cost": episode_info["cost_stats"]["total_tokens"],
-                "agent_sequence": list(episode_info["cost_stats"]["agent_breakdown"].keys()),
-                "success": bool(result and len(result.strip()) > 0)
+                "total_cost": cost_tracker.get_total_cost(),
+                "agent_sequence": list(orchestration_metrics.get("agent_usage", {}).keys()),
+                "success": bool(result and len(result.strip()) > 0),
+                "orchestration_metrics": orchestration_metrics
             }
             
         except Exception as e:
@@ -135,9 +194,9 @@ class BenchmarkPipeline:
             
             if abs(result_val - expected_val) < 1e-6:
                 return 1.0
-            elif abs(result_val - expected_val) / abs(expected_val) < 0.01:
+            elif abs(expected_val) > 0 and abs(result_val - expected_val) / abs(expected_val) < 0.01:
                 return 0.9
-            elif abs(result_val - expected_val) / abs(expected_val) < 0.05:
+            elif abs(expected_val) > 0 and abs(result_val - expected_val) / abs(expected_val) < 0.05:
                 return 0.7
             else:
                 return 0.0
@@ -161,28 +220,28 @@ class BenchmarkPipeline:
         print(f"Benchmarking: {task[:60]}...")
         
         original_result = self.run_original_supervisor(task)
-        rl_result = self.run_rl_supervisor(task)
+        enhanced_result = self.run_enhanced_supervisor(task)
         
         original_accuracy = self.evaluate_accuracy(
             original_result["result"], expected_answer, task
         )
-        rl_accuracy = self.evaluate_accuracy(
-            rl_result["result"], expected_answer, task
+        enhanced_accuracy = self.evaluate_accuracy(
+            enhanced_result["result"], expected_answer, task
         )
         
         benchmark_result = BenchmarkResult(
             task=task,
             expected_answer=expected_answer,
             original_result=original_result["result"],
-            rl_result=rl_result["result"],
+            enhanced_result=enhanced_result["result"],
             original_time=original_result["execution_time"],
-            rl_time=rl_result["execution_time"],
+            enhanced_time=enhanced_result["execution_time"],
             original_cost=original_result["total_cost"],
-            rl_cost=rl_result["total_cost"],
+            enhanced_cost=int(enhanced_result["total_cost"]),
             original_agents=original_result["agent_sequence"],
-            rl_agents=rl_result["agent_sequence"],
+            enhanced_agents=enhanced_result["agent_sequence"],
             original_accuracy=original_accuracy,
-            rl_accuracy=rl_accuracy
+            enhanced_accuracy=enhanced_accuracy
         )
         
         self.results.append(benchmark_result)
@@ -205,102 +264,62 @@ class BenchmarkPipeline:
             return {"error": "No benchmark results available"}
         
         original_accuracies = [r.original_accuracy for r in self.results]
-        rl_accuracies = [r.rl_accuracy for r in self.results]
+        enhanced_accuracies = [r.enhanced_accuracy for r in self.results]
         original_times = [r.original_time for r in self.results]
-        rl_times = [r.rl_time for r in self.results]
+        enhanced_times = [r.enhanced_time for r in self.results]
         original_costs = [r.original_cost for r in self.results]
-        rl_costs = [r.rl_cost for r in self.results]
+        enhanced_costs = [r.enhanced_cost for r in self.results]
         
         time_improvements = [
-            (orig - rl) / orig if orig > 0 else 0 
-            for orig, rl in zip(original_times, rl_times)
+            (orig - enh) / orig if orig > 0 else 0 
+            for orig, enh in zip(original_times, enhanced_times)
         ]
         
         cost_improvements = [
-            (orig - rl) / orig if orig > 0 else 0 
-            for orig, rl in zip(original_costs, rl_costs)
+            (orig - enh) / orig if orig > 0 else 0 
+            for orig, enh in zip(original_costs, enhanced_costs)
         ]
         
         report = {
             "summary": {
                 "total_tasks": len(self.results),
-                "original_avg_accuracy": np.mean(original_accuracies),
-                "rl_avg_accuracy": np.mean(rl_accuracies),
-                "accuracy_improvement": np.mean(rl_accuracies) - np.mean(original_accuracies),
+                "enhanced_avg_accuracy": np.mean(enhanced_accuracies),
+                "accuracy_improvement": np.mean(enhanced_accuracies) - np.mean(original_accuracies),
                 "original_avg_time": np.mean(original_times),
-                "rl_avg_time": np.mean(rl_times),
+                "enhanced_avg_time": np.mean(enhanced_times),
                 "avg_time_improvement": np.mean(time_improvements),
                 "original_avg_cost": np.mean(original_costs),
-                "rl_avg_cost": np.mean(rl_costs),
+                "enhanced_avg_cost": np.mean(enhanced_costs),
                 "avg_cost_improvement": np.mean(cost_improvements)
             },
-            "detailed_metrics": {
-                "accuracy_std": {
-                    "original": np.std(original_accuracies),
-                    "rl": np.std(rl_accuracies)
-                },
-                "time_std": {
-                    "original": np.std(original_times),
-                    "rl": np.std(rl_times)
-                },
-                "cost_std": {
-                    "original": np.std(original_costs),
-                    "rl": np.std(rl_costs)
-                }
-            },
             "win_rates": {
-                "rl_better_accuracy": sum(1 for r in self.results if r.rl_accuracy > r.original_accuracy) / len(self.results),
-                "rl_faster": sum(1 for r in self.results if r.rl_time < r.original_time) / len(self.results),
-                "rl_cheaper": sum(1 for r in self.results if r.rl_cost < r.original_cost) / len(self.results)
+                "enhanced_better_accuracy": sum(1 for r in self.results if r.enhanced_accuracy > r.original_accuracy) / len(self.results),
+                "enhanced_faster": sum(1 for r in self.results if r.enhanced_time < r.original_time) / len(self.results),
+                "enhanced_cheaper": sum(1 for r in self.results if r.enhanced_cost < r.original_cost) / len(self.results)
             },
-            "agent_usage_comparison": self._analyze_agent_usage(),
-            "task_breakdown": self._analyze_by_task_type()
+            "agent_usage_analysis": self._analyze_agent_usage()
         }
         
         return report
     
     def _analyze_agent_usage(self) -> Dict:
         original_agent_counts = {}
-        rl_agent_counts = {}
+        enhanced_agent_counts = {}
         
         for result in self.results:
             for agent in result.original_agents:
                 original_agent_counts[agent] = original_agent_counts.get(agent, 0) + 1
-            for agent in result.rl_agents:
-                rl_agent_counts[agent] = rl_agent_counts.get(agent, 0) + 1
+            for agent in result.enhanced_agents:
+                enhanced_agent_counts[agent] = enhanced_agent_counts.get(agent, 0) + 1
         
         return {
             "original_usage": original_agent_counts,
-            "rl_usage": rl_agent_counts,
+            "enhanced_usage": enhanced_agent_counts,
             "usage_efficiency": {
                 "original_avg_agents_per_task": np.mean([len(r.original_agents) for r in self.results]),
-                "rl_avg_agents_per_task": np.mean([len(r.rl_agents) for r in self.results])
+                "enhanced_avg_agents_per_task": np.mean([len(r.enhanced_agents) for r in self.results])
             }
         }
-    
-    def _analyze_by_task_type(self) -> Dict:
-        math_results = [r for r in self.results if self._is_math_problem(r.task)]
-        text_results = [r for r in self.results if not self._is_math_problem(r.task)]
-        
-        def analyze_group(results, name):
-            if not results:
-                return {name: {"count": 0}}
-                
-            return {
-                name: {
-                    "count": len(results),
-                    "original_avg_accuracy": np.mean([r.original_accuracy for r in results]),
-                    "rl_avg_accuracy": np.mean([r.rl_accuracy for r in results]),
-                    "original_avg_cost": np.mean([r.original_cost for r in results]),
-                    "rl_avg_cost": np.mean([r.rl_cost for r in results])
-                }
-            }
-        
-        breakdown = {}
-        breakdown.update(analyze_group(math_results, "math_problems"))
-        breakdown.update(analyze_group(text_results, "research_problems"))
-        
-        return breakdown
     
     def save_results(self):
         results_dict = {
@@ -309,15 +328,15 @@ class BenchmarkPipeline:
                     "task": r.task,
                     "expected_answer": r.expected_answer,
                     "original_result": r.original_result,
-                    "rl_result": r.rl_result,
+                    "enhanced_result": r.enhanced_result,
                     "original_time": r.original_time,
-                    "rl_time": r.rl_time,
+                    "enhanced_time": r.enhanced_time,
                     "original_cost": r.original_cost,
-                    "rl_cost": r.rl_cost,
+                    "enhanced_cost": r.enhanced_cost,
                     "original_agents": r.original_agents,
-                    "rl_agents": r.rl_agents,
+                    "enhanced_agents": r.enhanced_agents,
                     "original_accuracy": r.original_accuracy,
-                    "rl_accuracy": r.rl_accuracy
+                    "enhanced_accuracy": r.enhanced_accuracy
                 }
                 for r in self.results
             ],
@@ -328,9 +347,7 @@ class BenchmarkPipeline:
             json.dump(results_dict, f, indent=2)
 
 if __name__ == "__main__":
-    rl_supervisor = RLSupervisor(training_mode=False)
-    
-    benchmark = BenchmarkPipeline(rl_supervisor)
+    benchmark = BenchmarkPipeline()
     report = benchmark.benchmark_test_suite(["math", "research"])
     
     benchmark.save_results()

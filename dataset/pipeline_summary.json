@@ -1,0 +1,13 @@
+{
+  "experiment_name": "experiment_20250927_102054",
+  "start_time": "2025-09-27T10:20:54.451455",
+  "problem_types": [
+    "math",
+    "research"
+  ],
+  "traces_file": "dataset/expert_traces.json",
+  "checkpoint_path": "checkpoint/orchestrator.pth",
+  "benchmark_file": "dataset/benchmark_results.json",
+  "status": "completed",
+  "end_time": "2025-09-27T10:30:29.717220"
+}

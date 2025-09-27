@@ -14,9 +14,10 @@ class ImitationTrainer:
         self.agent_to_idx = {name: idx for idx, name in enumerate(orchestrator.agent_names)}
         self.idx_to_agent = {idx: name for name, idx in self.agent_to_idx.items()}
         
-        self.imitation_optimizer = torch.optim.Adam(
+        self.imitation_optimizer = torch.optim.AdamW(
             orchestrator.policy_net.parameters(), 
-            lr=learning_rate
+            lr=learning_rate,
+            weight_decay=1e-5
         )
         
         self.training_history = []
@@ -33,7 +34,6 @@ class ImitationTrainer:
             if not trace.get("agent_sequence") or not trace.get("messages"):
                 continue
                 
-            messages = []
             agent_sequence = trace["agent_sequence"]
             
             for i, agent_name in enumerate(agent_sequence):
@@ -55,7 +55,7 @@ class ImitationTrainer:
         agent_calls_seen = 0
         
         for msg in all_messages:
-            if msg.get("node") in ["research_agent", "math_agent"]:
+            if msg.get("node") in ["research_agent", "math_agent", "code_agent", "summary_agent"]:
                 if agent_calls_seen >= step:
                     break
                 agent_calls_seen += 1
@@ -235,24 +235,27 @@ class ImitationTrainer:
             'policy_net_state_dict': self.orchestrator.policy_net.state_dict(),
             'imitation_optimizer_state_dict': self.imitation_optimizer.state_dict(),
             'training_history': self.training_history,
-            'agent_to_idx': self.agent_to_idx
+            'agent_to_idx': self.agent_to_idx,
+            'state_encoder_config': {
+                'feature_dim': self.orchestrator.state_encoder.feature_dim
+            }
         }, filepath)
         
     def load_pretrained_model(self, filepath: str):
-        checkpoint = torch.load(filepath)
+        checkpoint = torch.load(filepath, map_location='cpu')
         self.orchestrator.policy_net.load_state_dict(checkpoint['policy_net_state_dict'])
         self.imitation_optimizer.load_state_dict(checkpoint['imitation_optimizer_state_dict'])
         self.training_history = checkpoint['training_history']
 
 if __name__ == "__main__":
-    orchestrator = RLOrchestrator(["research_agent", "math_agent"])
+    orchestrator = RLOrchestrator(["research_agent", "math_agent", "code_agent", "summary_agent"])
     trainer = ImitationTrainer(orchestrator)
     
-    results = trainer.train_imitation("execution_traces.json", num_epochs=100)
+    results = trainer.train_imitation("dataset/expert_traces.json", num_epochs=50)
     print(f"Training completed. Best validation accuracy: {results['best_val_accuracy']:.4f}")
     
-    trainer.save_pretrained_model("pretrained_orchestrator.pth")
+    trainer.save_pretrained_model("checkpoint/orchestrator.pth")
     
-    eval_results = trainer.evaluate_imitation_quality("execution_traces.json")
+    eval_results = trainer.evaluate_imitation_quality("dataset/expert_traces.json")
     print("Evaluation Results:")
     print(json.dumps(eval_results, indent=2))

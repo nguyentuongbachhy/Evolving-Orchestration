@@ -1,0 +1,71 @@
+{
+  "collection_results": {
+    "total_traces": 30,
+    "successful_traces": 30,
+    "by_type": {
+      "math": {
+        "total": 15,
+        "successful": 15,
+        "success_rate": 1.0
+      },
+      "research": {
+        "total": 15,
+        "successful": 15,
+        "success_rate": 1.0
+      }
+    },
+    "overall_success_rate": 1.0
+  },
+  "final_statistics": {
+    "total_traces": 30,
+    "successful_traces": 30,
+    "success_rate": 1.0,
+    "avg_execution_time": 7.534448472658793,
+    "avg_cost": 68.03333333333333,
+    "avg_agents_per_task": 1.0,
+    "most_used_agent": "math_agent",
+    "agent_usage_stats": {
+      "math_agent": {
+        "count": 15,
+        "tasks": [
+          "What is 2**10 + 3 - 2**9?...",
+          "Calculate 15 * 8 + 47...",
+          "What is the square root of 144...",
+          "Solve: 25 * 4 - 18...",
+          "What is 7**3 + 5**2?...",
+          "Calculate (100 - 25) / 5...",
+          "What is 3.14 * 10**2?...",
+          "Solve: 2**8 - 2**6...",
+          "What is 9! / 8!?...",
+          "Calculate 45 + 67 - 23...",
+          "What is 12**2 + 13**2?...",
+          "Solve: 1000 / 25 + 15...",
+          "What is 6 * 7 * 8?...",
+          "Calculate 2**16...",
+          "What is 99 + 1 - 50?..."
+        ]
+      },
+      "research_agent": {
+        "count": 15,
+        "tasks": [
+          "What is the capital of France?...",
+          "Who invented the telephone?...",
+          "What year was Python programmi...",
+          "What is the largest planet in ...",
+          "Who wrote the novel '1984'?...",
+          "What is the chemical symbol fo...",
+          "In what year did World War II ...",
+          "What is the fastest land anima...",
+          "Who painted the Mona Lisa?...",
+          "What is the smallest country i...",
+          "What element has the atomic nu...",
+          "In what year was the Internet ...",
+          "What is the hardest natural su...",
+          "Who developed the theory of re...",
+          "What is the currency of Japan?..."
+        ]
+      }
+    }
+  },
+  "experiment_name": "experiment_20250927_102054"
+}
